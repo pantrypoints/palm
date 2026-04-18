@@ -19,9 +19,7 @@
 
   <div class="login-card card">
     <div class="login-header">
-      <div class="login-icon">
-        <Hand size={32} strokeWidth={1.5} />
-      </div>
+        <img src="/palm.png" alt="Palm icon" class="" style="width: 100px" />
       <h1>Welcome Back</h1>
       <p>Sign in to view your palm reading</p>
     </div>

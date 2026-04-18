@@ -152,13 +152,13 @@
       <div class="step">
         <div class="step-icon"><Image size={28} /></div>
         <h3>Upload Your Palms</h3>
-        <p>Share image URLs of both your left and right palms for a complete reading.</p>
+        <p>Upload your left and right palm photos.</p>
       </div>
       <div class="step-arrow"><ChevronRight size={24} /></div>
       <div class="step">
         <div class="step-icon"><HelpCircle size={28} /></div>
         <h3>Ask Your Questions</h3>
-        <p>Share up to three questions you seek answers to about your life's journey.</p>
+        <p>Share up to three questions about your life's journey.</p>
       </div>
       <div class="step-arrow"><ChevronRight size={24} /></div>
       <div class="step">
@@ -573,9 +573,6 @@
     </div>
   </div>
 </section>
-
-
-
 
 
 
