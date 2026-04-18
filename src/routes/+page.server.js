@@ -1,25 +1,18 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/db/index.js';
-// Add `questions` to your imports here
 import { user, questions } from '$lib/db/schema.js'; 
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { setSessionAsync } from '$lib/session.js';
 import ImageKit from 'imagekit';
 
-// Import environment variables securely
+// Use dynamic imports to ensure they are read at runtime
 import { env as privateEnv } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
-// Initialize ImageKit
-const imagekit = new ImageKit({
-    publicKey: publicEnv.PUBLIC_IMAGEKIT_PUBLIC_KEY,
-    privateKey: privateEnv.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: publicEnv.PUBLIC_IMAGEKIT_URL_ENDPOINT
-});
-
-// Helper function to handle the file upload
-async function uploadToImageKit(file, fileName) {
+// Move the helper inside or pass the client to it
+async function uploadToImageKit(file, fileName, ikConfig) {
+    const imagekit = new ImageKit(ikConfig); // Initialize here
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -44,6 +37,18 @@ export async function load({ locals }) {
 
 export const actions = {
     register: async ({ request, cookies }) => {
+        // Prepare config object from env
+        const ikConfig = {
+            publicKey: publicEnv.PUBLIC_IMAGEKIT_PUBLIC_KEY,
+            privateKey: privateEnv.IMAGEKIT_PRIVATE_KEY,
+            urlEndpoint: publicEnv.PUBLIC_IMAGEKIT_URL_ENDPOINT
+        };
+
+        // Double check config exists at runtime
+        if (!ikConfig.publicKey) {
+            return fail(500, { errors: { server: 'Server configuration error: Missing keys.' } });
+        }
+
         const data = await request.formData();
         
         const username = data.get('username')?.toString().trim();
@@ -91,18 +96,19 @@ export const actions = {
             });
         }
 
-        let leftPalmUrl, rightPalmUrl;
 
+
+
+
+        let leftPalmUrl, rightPalmUrl;
         try {
             const timestamp = Date.now();
-            leftPalmUrl = await uploadToImageKit(leftPalmFile, `left_${username}_${timestamp}`);
-            rightPalmUrl = await uploadToImageKit(rightPalmFile, `right_${username}_${timestamp}`);
+            // Pass the config to the helper
+            leftPalmUrl = await uploadToImageKit(leftPalmFile, `left_${username}_${timestamp}`, ikConfig);
+            rightPalmUrl = await uploadToImageKit(rightPalmFile, `right_${username}_${timestamp}`, ikConfig);
         } catch (uploadError) {
             console.error("ImageKit Upload Error:", uploadError);
-            return fail(500, { 
-                errors: { server: 'Failed to upload images. Please try again.' },
-                values: { username, gender, dateOfBirth, job, handed, q1, q2, q3 }
-            });
+            return fail(500, { errors: { server: 'Upload failed.' } });
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
