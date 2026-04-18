@@ -58,14 +58,14 @@
 <footer class="site-footer">
   <div class="container footer-inner">
     <div class="footer-brand">
-      <Hand size={22} strokeWidth={2} />
+      <img src="/palm.png" alt="Palm icon" class="" style="width: 35px" />      
       <span>Pantrypoints<strong>Palm</strong></span>
       <p>Reveal the story written in your hands.</p>
     </div>
 
     <div class="footer-links">
       <h4>Follow Us</h4>
-      <a href="https://www.facebook.com/pantrypalm/" target="_blank" rel="noopener noreferrer" class="social-link">
+      <a href="https://www.facebook.com/pantrypoints" target="_blank" rel="noopener noreferrer" class="social-link">
         <Facebook size={18} />
         Facebook
       </a>
