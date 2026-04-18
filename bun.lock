@@ -9,6 +9,7 @@
         "bcryptjs": "^2.4.3",
         "drizzle-orm": "^0.31.0",
         "imagekit": "^6.0.0",
+        "imagekit-javascript": "^4.0.1",
         "lucide-svelte": "^0.378.0",
       },
       "devDependencies": {
@@ -357,6 +358,8 @@
     "hasown": ["hasown@2.0.3", "", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-ej4AhfhfL2Q2zpMmLo7U1Uv9+PyhIZpgQLGT1F9miIGmiCJIoCgSmczFdrc97mWT4kVY72KA+WnnhJ5pghSvSg=="],
 
     "imagekit": ["imagekit@6.0.0", "", { "dependencies": { "axios": "^1.6.5", "form-data": "^4.0.0", "hamming-distance": "^1.0.0", "lodash": "^4.17.15", "tslib": "^2.4.0", "uuid": "^8.3.2" } }, "sha512-0MsxThZM2PYH6ngwN3zi9PDa8pCB5mEZG2FSySYiZk3Hfri8IMwUqVNzRlLQewBHQ3YtTN9M59O0Xe9HRewtOA=="],
+
+    "imagekit-javascript": ["imagekit-javascript@4.0.1", "", {}, "sha512-V3eVMz7OW8w8dSNJXPtVcWQMdV0P1wRs+Bftb2B1bKRl8NjOf+NGRWYb/meJlrmSL/HxT68PjM92/XFB+9ZfJA=="],
 
     "is-reference": ["is-reference@3.0.3", "", { "dependencies": { "@types/estree": "^1.0.6" } }, "sha512-ixkJoqQvAP88E6wLydLGGqCJsrFUnqoH6HnaczB8XmDH1oaWU+xxdptvikTgaEhtZ53Ky6YXiBuUI2WXLMCwjw=="],
 
