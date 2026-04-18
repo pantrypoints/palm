@@ -1,0 +1,18 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "palm",
+	"compatibility_date": "2025-11-28",
+	"compatibility_flags": [
+		"nodejs_als",
+		"nodejs_compat"
+	],
+	"pages_build_output_dir": ".svelte-kit/cloudflare",
+	"observability": {
+		"enabled": true
+	},
+    "vars": { 
+    	"DATABASE_URL": "libsql://palm-pantrypoints.aws-ap-northeast-1.turso.io" 
+    }
+}
+
+
