@@ -17,7 +17,7 @@ A palm reading web app built with SvelteKit 2.x, Svelte 5, Turso DB, and Drizzle
 ```bash
 npm install
 ```
-
+https://www.youtube.com/watch?v=5s0l789SX0s
 ### 2. Configure environment
 
 Copy `.env.example` to `.env` and fill in your values:

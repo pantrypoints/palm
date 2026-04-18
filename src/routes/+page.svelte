@@ -1,35 +1,73 @@
 <script>
   import { enhance } from '$app/forms';
-  import {
-    Hand, Image, User, Lock, Eye, EyeOff, Calendar,
-    Users, Briefcase, HelpCircle, ChevronRight, Sparkles,
-    Shield, Star, Moon
-  } from 'lucide-svelte';
-
+  import { Hand, Image, User, Lock, Eye, EyeOff, Calendar, Users, Briefcase, HelpCircle, ChevronRight, Sparkles, Shield, Star, Moon } from 'lucide-svelte';
+  
   let { form } = $props();
-
   let showPass = $state(false);
   let showPassConfirm = $state(false);
-
-  let leftPreviewOverride = $state('');
-  let rightPreviewOverride = $state('');
-  let leftPreview = $derived(leftPreviewOverride || form?.values?.leftPalmUrl || '');
-  let rightPreview = $derived(rightPreviewOverride || form?.values?.rightPalmUrl || '');
-
+  let leftPreview = $state('');
+  let rightPreview = $state('');
   let leftError = $state(false);
   let rightError = $state(false);
-
   let loading = $state(false);
 
-  function onLeftInput(e) {
-    leftPreviewOverride = e.target.value;
-    leftError = false;
-  }
-  function onRightInput(e) {
-    rightPreviewOverride = e.target.value;
-    rightError = false;
-  }
+
+    // Generate local preview URLs when files are selected
+    function onLeftFileChange(e) {
+        const file = e.target.files?.[0];
+        if (file) {
+            leftPreview = URL.createObjectURL(file);
+            leftError = false;
+        } else {
+            leftPreview = '';
+        }
+    }
+
+    function onRightFileChange(e) {
+        const file = e.target.files?.[0];
+        if (file) {
+            rightPreview = URL.createObjectURL(file);
+            rightError = false;
+        } else {
+            rightPreview = '';
+        }
+    }
+
+  // function handleLeftFile(e) {
+  //   const file = e.target.files[0];
+  //   if (file && file.type.startsWith('image/')) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       leftPreview = e.target.result;
+  //       leftError = false;
+  //     };
+  //     reader.readAsDataURL(file);
+  //   } else if (file) {
+  //     leftError = true;
+  //     leftPreview = '';
+  //   } else {
+  //     leftPreview = '';
+  //   }
+  // }
+  
+  // function handleRightFile(e) {
+  //   const file = e.target.files[0];
+  //   if (file && file.type.startsWith('image/')) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       rightPreview = e.target.result;
+  //       rightError = false;
+  //     };
+  //     reader.readAsDataURL(file);
+  //   } else if (file) {
+  //     rightError = true;
+  //     rightPreview = '';
+  //   } else {
+  //     rightPreview = '';
+  //   }
+  // }
 </script>
+
 
 <svelte:head>
   <title>Pantrypoints Palm — Read Your Destiny</title>
@@ -38,6 +76,23 @@
 <!-- Hero Section -->
 <section class="hero">
   <div class="hero-bg">
+    <!-- Video Background -->
+    <video 
+      class="hero-video" 
+      autoplay 
+      muted 
+      loop 
+      playsinline
+      poster="/palm.jpg"
+    >
+      <source src="/palm.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+    
+    <!-- Video Overlay for better text readability -->
+    <div class="video-overlay"></div>
+    
+    <!-- Keep existing decorative elements -->
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
@@ -87,6 +142,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- How it works -->
 <section class="how-it-works">
@@ -142,90 +198,170 @@
           <!-- no global error -->
         {/if}
 
-        <form method="POST" action="?/register" use:enhance={() => {
+
+
+<form 
+    method="POST" 
+    action="?/register" 
+    enctype="multipart/form-data" 
+    use:enhance={() => {
+        loading = true;
+        return async ({ update }) => {
+            loading = false;
+            await update();
+        };
+    }}
+>
+
+
+<!--         <form method="POST" action="?/register" use:enhance={() => {
           loading = true;
           return async ({ update }) => {
             loading = false;
             await update();
           };
-        }}>
+        }}> -->
           <h3 class="form-section-title">
             <Image size={18} />
             Palm Photos
           </h3>
 
-          <!-- Palm URLs -->
-          <div class="palm-inputs">
-            <div class="palm-field">
-              <div class="form-group">
-                <label for="leftPalmUrl">
-                  Left Palm URL
-                  <span class="required">*required</span>
+
+    <div class="palm-inputs">
+        <div class="palm-field">
+            <div class="form-group">
+                <label for="leftPalm">
+                    Left Palm Photo <span class="required">*required</span>
                 </label>
-                <input
-                  id="leftPalmUrl"
-                  name="leftPalmUrl"
-                  type="url"
-                  placeholder="https://example.com/left-palm.jpg"
-                  value={form?.values?.leftPalmUrl || ''}
-                  oninput={onLeftInput}
-                  class:has-error={form?.errors?.leftPalmUrl}
-                  required
+                <input 
+                    id="leftPalm" 
+                    name="leftPalm" 
+                    type="file" 
+                    accept="image/*"
+                    onchange={onLeftFileChange} 
+                    class:has-error={form?.errors?.leftPalm} 
+                    required 
                 />
-                {#if form?.errors?.leftPalmUrl}
-                  <span class="error-msg">{form.errors.leftPalmUrl}</span>
+                {#if form?.errors?.leftPalm}
+                    <span class="error-msg">{form.errors.leftPalm}</span>
                 {/if}
-              </div>
-              {#if leftPreview && !leftError}
-                <img
-                  src={leftPreview}
-                  alt="Left palm preview"
-                  class="palm-preview"
-                  onerror={() => leftError = true}
-                />
-              {:else}
-                <div class="palm-placeholder">
-                  <Hand size={32} strokeWidth={1.5} />
-                  <span>Left Palm Preview</span>
-                </div>
-              {/if}
             </div>
 
-            <div class="palm-field">
-              <div class="form-group">
-                <label for="rightPalmUrl">
-                  Right Palm URL
-                  <span class="required">*required</span>
-                </label>
-                <input
-                  id="rightPalmUrl"
-                  name="rightPalmUrl"
-                  type="url"
-                  placeholder="https://example.com/right-palm.jpg"
-                  value={form?.values?.rightPalmUrl || ''}
-                  oninput={onRightInput}
-                  class:has-error={form?.errors?.rightPalmUrl}
-                  required
-                />
-                {#if form?.errors?.rightPalmUrl}
-                  <span class="error-msg">{form.errors.rightPalmUrl}</span>
-                {/if}
-              </div>
-              {#if rightPreview && !rightError}
-                <img
-                  src={rightPreview}
-                  alt="Right palm preview"
-                  class="palm-preview"
-                  onerror={() => rightError = true}
-                />
-              {:else}
+            {#if leftPreview && !leftError}
+                <img src={leftPreview} alt="Left palm preview" class="palm-preview" onerror={() => leftError = true} />
+            {:else}
                 <div class="palm-placeholder">
-                  <Hand size={32} strokeWidth={1.5} />
-                  <span>Right Palm Preview</span>
+                    <Hand size={32} strokeWidth={1.5} />
+                    <span>Left Palm Preview</span>
                 </div>
-              {/if}
+            {/if}
+        </div>
+
+        <div class="palm-field">
+            <div class="form-group">
+                <label for="rightPalm">
+                    Right Palm Photo <span class="required">*required</span>
+                </label>
+                <input 
+                    id="rightPalm" 
+                    name="rightPalm" 
+                    type="file" 
+                    accept="image/*"
+                    onchange={onRightFileChange} 
+                    class:has-error={form?.errors?.rightPalm} 
+                    required 
+                />
+                {#if form?.errors?.rightPalm}
+                    <span class="error-msg">{form.errors.rightPalm}</span>
+                {/if}
             </div>
-          </div>
+
+            {#if rightPreview && !rightError}
+                <img src={rightPreview} alt="Right palm preview" class="palm-preview" onerror={() => rightError = true} />
+            {:else}
+                <div class="palm-placeholder">
+                    <Hand size={32} strokeWidth={1.5} />
+                    <span>Right Palm Preview</span>
+                </div>
+            {/if}
+        </div>
+    </div>
+
+
+
+<!-- <div class="palm-inputs">
+  <div class="palm-field">
+    <div class="form-group">
+      <label for="leftPalmImage">
+        Left Palm Photo <span class="required">*required</span>
+      </label>
+      <input 
+        id="leftPalmImage" 
+        name="leftPalmImage" 
+        type="file" 
+        accept="image/jpeg,image/png,image/jpg,image/webp"
+        onchange={handleLeftFile}
+        class:has-error={form?.errors?.leftPalmImage}
+        required 
+      />
+      <small class="file-hint">Max 5MB. JPEG, PNG, or WebP</small>
+      {#if form?.errors?.leftPalmImage}
+        <span class="error-msg">{form.errors.leftPalmImage}</span>
+      {/if}
+    </div>
+    {#if leftPreview && !leftError}
+      <img src={leftPreview} alt="Left palm preview" class="palm-preview" />
+    {:else if leftError}
+      <div class="palm-placeholder error">
+        <Hand size={32} strokeWidth={1.5} />
+        <span>Invalid image file</span>
+      </div>
+    {:else}
+      <div class="palm-placeholder">
+        <Hand size={32} strokeWidth={1.5} />
+        <span>Left Palm Preview</span>
+      </div>
+    {/if}
+  </div>
+  
+  <div class="palm-field">
+    <div class="form-group">
+      <label for="rightPalmImage">
+        Right Palm Photo <span class="required">*required</span>
+      </label>
+      <input 
+        id="rightPalmImage" 
+        name="rightPalmImage" 
+        type="file" 
+        accept="image/jpeg,image/png,image/jpg,image/webp"
+        onchange={handleRightFile}
+        class:has-error={form?.errors?.rightPalmImage}
+        required 
+      />
+      <small class="file-hint">Max 5MB. JPEG, PNG, or WebP</small>
+      {#if form?.errors?.rightPalmImage}
+        <span class="error-msg">{form.errors.rightPalmImage}</span>
+      {/if}
+    </div>
+    {#if rightPreview && !rightError}
+      <img src={rightPreview} alt="Right palm preview" class="palm-preview" />
+    {:else if rightError}
+      <div class="palm-placeholder error">
+        <Hand size={32} strokeWidth={1.5} />
+        <span>Invalid image file</span>
+      </div>
+    {:else}
+      <div class="palm-placeholder">
+        <Hand size={32} strokeWidth={1.5} />
+        <span>Right Palm Preview</span>
+      </div>
+    {/if}
+  </div>
+</div>
+
+ -->
+
+
 
           <hr class="divider" />
 
@@ -437,6 +573,11 @@
     </div>
   </div>
 </section>
+
+
+
+
+
 
 <style>
   /* ===== HERO ===== */
@@ -844,4 +985,269 @@
       margin: 0;
     }
   }
+
+  /* Add to existing styles */
+  .file-hint {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+  }
+  
+  .palm-placeholder.error {
+    background: var(--rose-50);
+    border-color: var(--rose-dark);
+    color: var(--rose-dark);
+  }
+  
+  input[type="file"] {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  input[type="file"].has-error {
+    border-color: var(--rose-dark);
+  }
+
+
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 0 5rem;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Video Background Styles */
+  .hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  /* Dark overlay for better text contrast */
+  .video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.8) 50%,
+      rgba(0, 0, 0, 0.9) 100%
+    );
+    z-index: 1;
+  }
+
+  /* Adjust existing elements to appear above video */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    z-index: 2;
+  }
+
+  .orb-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--pink-300), transparent);
+    top: -200px;
+    right: -200px;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .orb-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--pink-200), transparent);
+    bottom: -100px;
+    left: -100px;
+    animation: float 10s ease-in-out infinite reverse;
+  }
+
+  .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #ffd6e8, transparent);
+    top: 50%;
+    left: 40%;
+    animation: float 12s ease-in-out infinite 2s;
+    z-index: 2;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-20px) scale(1.05);
+    }
+  }
+
+  .lines {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+
+  .line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--pink-200), transparent);
+    opacity: 0.2;
+    left: calc(var(--i) * 16.66%);
+  }
+
+  /* Hero Content - ensure it's above video */
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    max-width: 650px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.35rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    line-height: 1.2;
+    color: white;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-title .highlight {
+    display: block;
+    background: linear-gradient(135deg, #ffd6e8, #ffb3d1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+  }
+
+  .hero-desc {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.7;
+    max-width: 520px;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--pink-500), var(--pink-600));
+    color: white;
+    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat :global(svg) {
+    color: var(--pink-300);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 90vh;
+      padding: 4rem 0;
+    }
+
+    .hero-title {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+    }
+  }
 </style>
+
+
+

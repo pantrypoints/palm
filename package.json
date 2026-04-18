@@ -23,6 +23,7 @@
     "@libsql/client": "^0.6.0",
     "bcryptjs": "^2.4.3",
     "drizzle-orm": "^0.31.0",
+    "imagekit": "^6.0.0",
     "lucide-svelte": "^0.378.0"
   }
 }

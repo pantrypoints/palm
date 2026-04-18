@@ -19,7 +19,7 @@
 <header class="site-header">
   <div class="container header-inner">
     <a href="/" class="logo">
-      <Hand size={26} strokeWidth={2} />
+      <img src="/palm.png" alt="Palm icon" class="" style="width: 35px" />
       <span>Pantrypoints<strong>Palm</strong></span>
     </a>
 
